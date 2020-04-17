@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx
+    depends_on:
+      - backend
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/stage.conf:/etc/nginx/nginx.conf
+    command: [nginx, '-g', 'daemon off;']
+
+  celery:
+    build: .
+    command: celery worker --app=app --workdir=/app -l info
+    environment:
+        - C_FORCE_ROOT=1
+        - AWS_S3_ENDPOINT=http://localstack:4572
+        - AWS_ACCESS_KEY_ID=none
+        - AWS_SECRET_ACCESS_KEY=none
+        - AWS_DEFAULT_REGION_NAME=ru-central1
+    volumes:
+      - .:/app
+    depends_on:
+      - localstack
+
+  # RabbitMQ
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3.6.0
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  backend:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - ./logs:/var/app/log
+      - ./:/usr/src/app
+    entrypoint: /bin/sh /usr/src/app/entrypoint.sh
+    environment:
+      - C_FORCE_ROOT=1
+      - AWS_S3_ENDPOINT=http://localstack:4572
+      - AWS_ACCESS_KEY_ID=none
+      - AWS_SECRET_ACCESS_KEY=none
+      - AWS_DEFAULT_REGION_NAME=ru-central1
+    depends_on:
+      - localstack
+
+  # local s3 storage
+  localstack:
+    image: localstack/localstack
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    networks:
+      default:
+    ports:
+      - "4572:4572"
+    volumes:
+      - "./.localstack:/tmp/localstack"

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+  {% csrf_token %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Image</th>
+      <th scope="col">Title</th>
+      <th scope="col">Camera</th>
+      <th scope="col">File Size</th>
+      <th scope="col">Creation Date</th>
+      <th scope="col">Upload Date</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {%  for img in object_list %}
+        <tr>
+          <th scope="row">{{ forloop.counter }}</th>
+          <td>
+              <a href="{{ img.url }}">
+                <img src="{{ img.thumb_url }}">
+              </a>
+          </td>
+          <td>{{ img.title }}</td>
+          <td>{{ img.camera }}</td>
+          <td>{{ img.size }}</td>
+          <td>{{ img.creation_date }}</td>
+          <td>{{ img.upload_date }}</td>
+          <td><button type="button" class="btn btn-warning" onclick="delete_image(this, '{{ img.img_hash }}')">Delete</button></td>
+        </tr>
+    {%  endfor %}
+  </tbody>
+</table>
+
+<script>
+    let csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+    async function delete_image(el, img_hash){
+        let agree = confirm('Вы уверены что хотите удалить изображение?')
+        if (agree) {
+            let response = await fetch('/delete/' + img_hash,
+                                        {method: 'POST',
+                                         headers: {"X-CSRFToken": csrftoken}
+                                        }
+                                    )
+            let resp = await response.json();
+            if (resp.status === 'success'){
+                el.parentNode.parentNode.remove();
+            }
+        }
+    }
+</script>
+
+
+{% endblock %}

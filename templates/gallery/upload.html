@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container ">
+        {% csrf_token %}
+                <div class="row m-5">
+                    <div class="col-md-4 align-bottom center" >
+                    </div>
+                    <div class="col-md-4 align-bottom center" >
+                        <h1>Upload image</h1>
+                    </div>
+                    <div class="col-md-4 align-bottom center" >
+                    </div>
+                </div>
+        <div class="row ">
+                <div class="col-md-3 "></div>
+                <div class="col-md-3 col-sm-12 h-100 d-table">
+                    <label for="exampleFormControlFile1">Select file to upload</label>
+                </div>
+                <div class="col-md-3 ">
+                    <label for="exampleFormControlFile1">Image title</label>
+                </div>
+
+                <div class="col-md-3">
+                </div>
+        </div>
+        <div class="row ">
+                <div class="col-md-3"></div>
+                <div class="col-md-3 align-self-center ">
+                    <input id="uploadInput" type=file accept="text/html" name="files[]" size=30 class="form-control-file">
+                </div>
+                <div class="col-md-3 align-self-center">
+                    <input id="imageNameInput" size=30 class="form-control-file">
+                </div>
+
+                <div class="col-md-3 align-self-center">
+                    <button id="submitBtn" type="button" class="btn btn-primary mb-2">upload</button>
+                </div>
+        </div>
+    </div>
+<script>
+    let submitBtn = document.getElementById('submitBtn');
+    let uploadInput = document.getElementById('uploadInput');
+    let imageTitle = document.getElementById('imageNameInput');
+    let csrftoken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    console.log(csrftoken)
+
+    var boundary = String(Math.random()).slice(2);
+
+    function handleSubmit() {
+
+        var formData = new FormData();
+        formData.append('imageTitle', imageTitle.value);
+        formData.append('image', uploadInput.files[0]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '{% url 'upload' %}', true);
+        xhr.upload.onprogress = function(event) {
+            console.log(`Отправлено ${event.loaded} из ${event.total}`);
+          };
+        xhr.responseType = 'json';
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        xhr.send(formData);
+        xhr.onreadystatechange = function(){
+        if(xhr.readyState !== 4) return;
+        if(xhr.status !== 200){
+            alert("Status: " + xhr.status);
+        }else{
+            alert(xhr.response.message);
+        }
+    };
+    }
+
+  submitBtn.addEventListener('click', handleSubmit);
+</script>
+
+
+
+{% endblock %}
