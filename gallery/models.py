@@ -14,3 +14,11 @@ class Image(models.Model):
     upload_date = models.DateTimeField(verbose_name=_("image uploaded"), blank=True, null=True, auto_now=True)
     url = models.CharField(verbose_name=_("url"), max_length=850)
     thumb_url = models.CharField(verbose_name=_("thumbnail"), max_length=850)
+
+    class Meta:
+        get_latest_by = 'upload_date'
+        ordering = ['-creation_date']
+        indexes = [
+            models.Index(fields=['img_hash']),
+        ]
+

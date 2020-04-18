@@ -55,6 +55,7 @@ coverage.xml
 local_settings.py
 
 # Flask stuff:
+scheduler/
 instance/
 .webassets-cache
 
