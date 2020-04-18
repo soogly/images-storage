@@ -13,7 +13,7 @@ def get_exif_data(img):
 
     for k, v in PIL.ExifTags.TAGS.items():
 
-        if k in exif_data_pil:
+        if exif_data_pil and k in exif_data_pil:
             value = exif_data_pil[k]
         else:
             value = None
