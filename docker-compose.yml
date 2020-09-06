@@ -1,5 +1,7 @@
 version: '3'
 
+
+
 services:
   nginx:
     image: nginx
@@ -13,30 +15,30 @@ services:
       - ./nginx/stage.conf:/etc/nginx/nginx.conf
     command: [nginx, '-g', 'daemon off;']
 
-  celery:
-    build: .
-    command: celery worker --app=app --workdir=/app -l info
-    environment:
-        - C_FORCE_ROOT=1
-        - AWS_S3_ENDPOINT=http://localstack:4572
-        - AWS_ACCESS_KEY_ID=none
-        - AWS_SECRET_ACCESS_KEY=none
-        - AWS_DEFAULT_REGION_NAME=ru-central1
-    volumes:
-      - .:/app
-    depends_on:
-      - localstack
+#  celery:
+#    build: .
+#    command: celery worker --app=app --workdir=/app -l info
+#    environment:
+#        - C_FORCE_ROOT=1
+#        - AWS_S3_ENDPOINT=http://localstack:4572
+#        - AWS_ACCESS_KEY_ID=none
+#        - AWS_SECRET_ACCESS_KEY=none
+#        - AWS_DEFAULT_REGION_NAME=ru-central1
+#    volumes:
+#      - .:/app
+#    depends_on:
+#      - localstack
 
   # RabbitMQ
-  rabbit:
-    hostname: rabbit
-    image: rabbitmq:3.6.0
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=mypass
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+#  rabbit:
+#    hostname: rabbit
+#    image: rabbitmq:3.6.0
+#    environment:
+#      - RABBITMQ_DEFAULT_USER=admin
+#      - RABBITMQ_DEFAULT_PASS=mypass
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
 
   backend:
     build:

@@ -42,7 +42,8 @@ class UploadImageView(View):
                           "size": image.size,
                           "charset": image.charset,}
             print(image_info)
-            result = handle_image.delay(image.read(), image_title, image_info)
+            # result = handle_image.delay(image.read(), image_title, image_info)
+            result = handle_image(image.read(), image_title, image_info)
             response = result.get()
             return JsonResponse({"message": response})
         else:
@@ -54,6 +55,7 @@ def delete_image(request, img_hash):
     print("img_hash 1")
     print(img_hash)
     if request.method == "POST":
-        status = delete_image_task.delay(img_hash)
+        # status = delete_image_task.delay(img_hash)
+        status = delete_image_task(img_hash)
         return JsonResponse({"status": status.get()})
 
