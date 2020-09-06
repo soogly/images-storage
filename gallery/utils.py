@@ -50,6 +50,12 @@ s3 = boto3.resource('s3',
                     )
 
 
+content_types_map = {'png': 'image/png',
+                     'jpeg': 'image/jpg',
+                     'gif': 'image/gif',
+                     }
+
+
 def save_to_s3(img, filepath, ext):
 
     try:
@@ -65,6 +71,7 @@ def save_to_s3(img, filepath, ext):
     s3.Bucket(BUCKET_NAME).put_object(ACL='public-read',
                                       Key=filepath,
                                       Body=origin_buf,
+                                      ContentType=content_types_map.get(ext)
                                       )
 
 
